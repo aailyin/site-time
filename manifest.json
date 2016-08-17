@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+
+  "name": "Site time",
+  "description": "This extension counts and shows how much time you waste on sites per day.",
+  "version": "0.0.1",
+
+  "browser_action": {
+    "default_icon": "./images/32x32.png",
+    "default_popup": "popup.html",
+    "default_title": "Display statistic of wasted time"
+  },
+
+  "permissions": [
+    "activeTab",
+    "https://ajax.googleapis.com/"
+  ]
+}

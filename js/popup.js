@@ -1,7 +1,10 @@
-// TODO: save url and count time
 document.addEventListener('DOMContentLoaded', function () {
   getCurrentTabUrl( (url) => {
-    var urlName = document.getElementById('url-name');
+    // TODO: save url and count time
+    //var urlName = document.getElementById('site-name');
+    //urlName.innerHTML = url;
+
+    var originSite = location.origin;
     urlName.innerHTML = url;
   });
 });

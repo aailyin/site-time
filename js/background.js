@@ -41,6 +41,8 @@ function addTime(tabId, time, res) {
     data: null
   };
 
+  tabId = encodeURI(tabId);
+
   if (!tabId) {
     res({responseData: 'Not Saved!'});
     return;
@@ -55,11 +57,12 @@ function addTime(tabId, time, res) {
 
     if(savedTime[tabId]) {
       total = parseInt(savedTime[tabId], 10) + time;
+      console.debug('Tab was found: ' + total);
     } else {
       total = time;
+      console.debug('Tab wasn\'t found: ' + total);
     }
 
-    // TODO: how to pass key as site name?
     storageObj[tabId] = total;
 
     chrome.storage.local.set(storageObj, function () {
@@ -78,6 +81,7 @@ function addTime(tabId, time, res) {
 * @param {String} tabId Site name that is used as id.
 * @param {Function} callback
 */
+// TODO: change based on addTime
 function getTime(tabId, res) {
   let response = {
     action: GET_TIME,

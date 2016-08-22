@@ -2,19 +2,19 @@ const currentTab = location.origin;
 const ADD_TIME = 'ADD_TIME';
 const GET_TIME = 'GET_TIME';
 
-let timeoutId = null;
+let intervalId = null;
 
 // The current tab is inactive so we need to remove timeout
 window.onblur = function () {
-  clearTimeout(timeoutId);
-  timeoutId = null;
+  clearInterval(intervalId);
+  intervalId = null;
 };
 
 window.onfocus = function () {
-  if (timeoutId) {
-    clearTimeout(timeoutId);
+  if (intervalId) {
+    clearIntervel(intervalId);
   }
-  timeoutId = setTimeout(countTime, 3000);
+  intervalId = setInterval(countTime, 3000);
 };
 
 function countTime() {
@@ -30,4 +30,4 @@ function countTime() {
     });
 }
 
-setTimeout(countTime, 3000);
+setInterval(countTime, 3000);

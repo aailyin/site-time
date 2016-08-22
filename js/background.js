@@ -13,6 +13,9 @@ function listener(req, sender, res) {
   let action = req.action;
   let data = req.data;
 
+  console.log('Got message!');
+  console.log(req);
+
   switch (action) {
     case ADD_TIME:
       addTime(data.tabId, data.time, res);
@@ -30,25 +33,41 @@ function listener(req, sender, res) {
 * 
 * @param {String} tabId Site name that is used as id.
 * @param {Number} time Time value.
-* @param {Function} callback
+* @param {Function} res Callback function.
 */
-function addTime(tabId, time, callback) {
+function addTime(tabId, time, res) {
   let response = {
     action: ADD_TIME,
     data: null
   };
 
   if (!tabId) {
-    res(response);
+    res({responseData: 'Not Saved!'});
     return;
   }
 
-  chrome.storage.sync.get(tabId, (savedTime) => {
-    let total = parseInt(savedTime[tabId], 10) + time;
+  chrome.storage.local.get(tabId, function (savedTime) {
+    let total = 0;
+    let storageObj = {};
 
-    chrome.storage.sync.set({tabId: total}, (result) => {
-      response.data = result[tabId];
-      res(response);
+    //check error in app
+    //if(chrome.runtime.lastError)
+
+    if(savedTime[tabId]) {
+      total = parseInt(savedTime[tabId], 10) + time;
+    } else {
+      total = time;
+    }
+
+    // TODO: how to pass key as site name?
+    storageObj[tabId] = total;
+
+    chrome.storage.local.set(storageObj, function () {
+      
+      //check error in app
+      //if(chrome.runtime.lastError)
+
+      res({responseData: 'Saved!'});
     });
   });
 }
@@ -70,7 +89,7 @@ function getTime(tabId, res) {
     return;
   }
 
-  chrome.storage.sync.get(tabId, (savedTime) => {
+  chrome.storage.sync.get(tabId, function (savedTime) {
     response.data = parseInt(savedTime[tabId], 10);
     res(response);
   });

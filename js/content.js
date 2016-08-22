@@ -14,8 +14,11 @@ window.onfocus = function () {
   if (timeoutId) {
     clearTimeout(timeoutId);
   }
-  timeoutId = setTimeout(function () {
-    chrome.runtime.sendMessage({
+  timeoutId = setTimeout(countTime, 3000);
+};
+
+function countTime() {
+  chrome.runtime.sendMessage({
       action: ADD_TIME, 
       data: {
         tabId: currentTab,
@@ -25,5 +28,6 @@ window.onfocus = function () {
       // data was sent
       console.log(data);
     });
-  }, 60000);
-};
+}
+
+setTimeout(countTime, 3000);

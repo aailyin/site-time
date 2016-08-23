@@ -19,12 +19,12 @@ function listener(req, sender, res) {
   switch (action) {
     case ADD_TIME:
       addTime(data.tabId, data.time, res);
-      break;
+      return true;
     case GET_TIME: 
       getTime(data.tabId, res);
-      break;
+      return true;
     default:
-      break;
+      return false;
   }
 }
 
@@ -49,27 +49,38 @@ function addTime(tabId, time, res) {
   }
 
   chrome.storage.local.get(tabId, function (savedTime) {
+    let savedSiteTimeObj = savedTime[tabId];
+
     let total = 0;
     let storageObj = {};
 
-    //check error in app
-    //if(chrome.runtime.lastError)
+    let date = new Date();
+    let day = date.getDate();
+    let month = date.getMonth();
+    let year = date.getFullYear();
+    let currentDate = `${month}/${day}/${year}`;
 
-    if(savedTime[tabId]) {
-      total = parseInt(savedTime[tabId], 10) + time;
+    if (savedSiteTimeObj && savedSiteTimeObj.total) {
+      
+      if (savedSiteTimeObj.date === currentDate) {
+        total = parseInt(savedSiteTimeObj.total, 10) + time;
+      } else {
+        total = time;
+      }
+      
       console.debug('Tab was found: ' + total);
     } else {
       total = time;
       console.debug('Tab wasn\'t found: ' + total);
     }
 
-    storageObj[tabId] = total;
+    storageObj[tabId] = {
+      total: total,
+      date: currentDate
+    };
+    console.debug(storageObj);
 
     chrome.storage.local.set(storageObj, function () {
-      
-      //check error in app
-      //if(chrome.runtime.lastError)
-
       res({responseData: 'Saved!'});
     });
   });
@@ -81,21 +92,17 @@ function addTime(tabId, time, res) {
 * @param {String} tabId Site name that is used as id.
 * @param {Function} callback
 */
-// TODO: change based on addTime
 function getTime(tabId, res) {
-  let response = {
-    action: GET_TIME,
-    data: null
-  };
+  console.log('GET TIME FROM BACKGROUND!');
 
   if (!tabId) {
-    res(response);
+    res(null);
     return;
   }
 
-  chrome.storage.sync.get(tabId, function (savedTime) {
-    response.data = parseInt(savedTime[tabId], 10);
-    res(response);
+  chrome.storage.local.get(tabId, function (savedTime) {
+    savedTime[tabId].siteName = tabId;
+    res(savedTime[tabId]);
   });
 }
 

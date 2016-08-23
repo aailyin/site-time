@@ -1,15 +1,26 @@
 document.addEventListener('DOMContentLoaded', () => {
-  getCurrentTabUrl( (url) => {
+  getCurrentTabUrl( function (tab) {
     // TODO: save url and count time
     let urlName = document.getElementById('site-name');
-    urlName.innerHTML = url;
+    
+    chrome.tabs.sendMessage(tab.id, {action: 'GET_TIME'}, function(data) {
+      if (!data || chrome.runtime.lastError) {
+        console.debug('Cannot get Time!');
+        // TODO: Display error in popup here
+        return;
+      }
+
+      let siteName = data.siteName;
+      let time = getWastedTime(data.total);
+      urlName.innerHTML = siteName + ' - ' + time;
+    });
   });
 });
 
 /**
  * Get the current URL.
  *
- * @param {function(string)} callback - called when the URL of the current tab
+ * @param {Function} callback - called when the URL of the current tab
  *   is found.
  */
 function getCurrentTabUrl(callback) {
@@ -20,18 +31,26 @@ function getCurrentTabUrl(callback) {
     currentWindow: true
   };
 
-  chrome.tabs.query(queryInfo, (tabs) => {
+  chrome.tabs.query(queryInfo, function (tabs) {
     // chrome.tabs.query invokes the callback with a list of tabs that match the
     // query. When the popup is opened, there is certainly a window and at least
     // one tab, so we can safely assume that |tabs| is a non-empty array.
     // A window can only have one active tab at a time, so the array consists of
     // exactly one tab.
-    let tab = tabs[0];
-
-    // A tab is a plain object that provides information about the tab.
-    // See https://developer.chrome.com/extensions/tabs#type-Tab
-    let url = tab.url;
-
-    callback(url);
+    callback(tabs[0]);
   });
+}
+
+/**
+* Get wasted time in format hh:mm.
+* @param {Number|String} msTime Saved wasted time in ms.
+* @return {String} 
+*/
+function getWastedTime(msTime) {
+  let ms = parseInt(msTime, 10);
+  let mins = ms / (60*1000);
+  let hours = ~~(mins/60);
+  let minutes = mins - hours*60;
+
+  return hours + 'h ' + minutes + 'm';
 }

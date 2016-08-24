@@ -4,22 +4,6 @@ const GET_TIME = 'GET_TIME';
 
 let intervalId = null;
 
-// The current tab is inactive so we need to remove timeout
-window.onblur = function () {
-  console.log('Window is NOT active.');
-  clearInterval(intervalId);
-  intervalId = null;
-};
-
-window.onfocus = function () {
-  console.log('Window is active.');
-  if (intervalId) {
-    clearIntervel(intervalId);
-  }
-  intervalId = setInterval(countTime, 60000);
-};
-
-
 chrome.runtime.onMessage.addListener(listener);
 
 /**
@@ -42,12 +26,9 @@ function listener(req, sender, res) {
   }
 }
 
-// TODO: update
 /**
 * Get time that user wasted on the site.
-* 
-* @param {Object} data Site name that is used as id.
-* @param {Function} callback
+* @param {Function} res Callback function.
 */
 function getTime(res) {
   console.log('GET TIME FROM BACKGROUND!');
@@ -66,7 +47,9 @@ function getTime(res) {
     });
 }
 
-// TODO: comments
+/**
+* Count time main function.
+*/
 function countTime() {
   chrome.runtime.sendMessage({
       action: ADD_TIME, 
@@ -82,5 +65,21 @@ function countTime() {
       }
     });
 }
+
+// Window events---------------------------------------
+// The current tab is inactive so we need to remove timeout.
+window.onblur = function () {
+  console.log('Window is NOT active.');
+  clearInterval(intervalId);
+  intervalId = null;
+};
+
+window.onfocus = function () {
+  console.log('Window is active.');
+  if (intervalId) {
+    clearIntervel(intervalId);
+  }
+  intervalId = setInterval(countTime, 60000);
+};
 
 intervalId = setInterval(countTime, 60000);

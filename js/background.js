@@ -1,7 +1,8 @@
-// Background js file to count and save time
-
 const ADD_TIME = 'ADD_TIME';
 const GET_TIME = 'GET_TIME';
+
+chrome.runtime.onMessage.addListener(listener);
+
 /**
 * Background listener for all tabs.
 *
@@ -53,15 +54,9 @@ function addTime(tabId, time, res) {
 
     let total = 0;
     let storageObj = {};
-
-    let date = new Date();
-    let day = date.getDate();
-    let month = date.getMonth();
-    let year = date.getFullYear();
-    let currentDate = `${month}/${day}/${year}`;
+    let currentDate = getDate();
 
     if (savedSiteTimeObj && savedSiteTimeObj.total) {
-      
       if (savedSiteTimeObj.date === currentDate) {
         total = parseInt(savedSiteTimeObj.total, 10) + time;
       } else {
@@ -106,5 +101,15 @@ function getTime(tabId, res) {
   });
 }
 
-// Set listener.
-chrome.runtime.onMessage.addListener(listener);
+/**
+* Get date in format mm/dd/yyyy.
+* @return {String}
+*/
+function getDate() {
+    let date = new Date();
+    let day = date.getDate();
+    let month = date.getMonth();
+    let year = date.getFullYear();
+
+    return `${month}/${day}/${year}`;
+}

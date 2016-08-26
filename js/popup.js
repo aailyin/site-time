@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     chrome.tabs.sendMessage(tab.id, {action: 'GET_TIME'}, function(data) {
       if (!data || chrome.runtime.lastError) {
-        console.debug('Cannot get Time!');
+        console.error('Cannot get Time!');
         // TODO: Display error in popup here
         return;
       }

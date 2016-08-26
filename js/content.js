@@ -14,11 +14,14 @@ chrome.runtime.onMessage.addListener(listener);
 * @param {Function} res Callback function.
 */
 function listener(req, sender, res) {
+  console.debug('content.js:listener()');
+  console.debug('req:');
+  console.debug(req);
+
   let action = req.action;
 
   switch (action) {
-    case GET_TIME: 
-      console.log('GET TIME FROM CONTENT!');
+    case GET_TIME:
       getTime(res);
       return true;
     default:
@@ -31,7 +34,7 @@ function listener(req, sender, res) {
 * @param {Function} res Callback function.
 */
 function getTime(res) {
-  console.log('GET TIME FROM BACKGROUND!');
+  console.debug('content.js:getTime()');
 
   chrome.runtime.sendMessage({
       action: GET_TIME, 
@@ -59,7 +62,7 @@ function countTime() {
       }
     }, function (data) {
       if (chrome.runtime.lastError) {
-        console.error('Counted time has not been saved!');
+        console.error('Counted time has not been saved for: ' + currentTab);
       } else {
         console.log(data);
       }
@@ -69,13 +72,11 @@ function countTime() {
 // Window events---------------------------------------
 // The current tab is inactive so we need to remove timeout.
 window.onblur = function () {
-  console.log('Window is NOT active.');
   clearInterval(intervalId);
   intervalId = null;
 };
 
 window.onfocus = function () {
-  console.log('Window is active.');
   if (intervalId) {
     clearIntervel(intervalId);
   }

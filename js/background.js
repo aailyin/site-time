@@ -14,8 +14,9 @@ function listener(req, sender, res) {
   let action = req.action;
   let data = req.data;
 
-  console.log('Got message!');
-  console.log(req);
+  console.debug('background.js:listener()');
+  console.debug('req:');
+  console.debug(req);
 
   switch (action) {
     case ADD_TIME:
@@ -62,17 +63,16 @@ function addTime(tabId, time, res) {
       } else {
         total = time;
       }
-      
-      console.debug('Tab was found: ' + total);
     } else {
       total = time;
-      console.debug('Tab wasn\'t found: ' + total);
     }
 
     storageObj[tabId] = {
       total: total,
       date: currentDate
     };
+    console.debug('background.js:addTime()');
+    console.debug('object to save/update');
     console.debug(storageObj);
 
     chrome.storage.local.set(storageObj, function () {
@@ -88,7 +88,9 @@ function addTime(tabId, time, res) {
 * @param {Function} callback
 */
 function getTime(tabId, res) {
-  console.log('GET TIME FROM BACKGROUND!');
+  console.debug('background.js:getTime()');
+  console.debug('tabId:');
+  console.debug(tabId);
 
   if (!tabId) {
     res(null);

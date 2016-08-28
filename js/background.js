@@ -54,30 +54,43 @@ function addTime(tabId, time, res) {
     let savedSiteTimeObj = savedTime[tabId];
 
     let total = 0;
-    let storageObj = {};
     let currentDate = getDate();
+    let storageObj = {};
+
+    storageObj[tabId] = {
+      date: currentDate
+    };
 
     if (savedSiteTimeObj && savedSiteTimeObj.total) {
       if (savedSiteTimeObj.date === currentDate) {
         total = parseInt(savedSiteTimeObj.total, 10) + time;
       } else {
-        total = time;
+        storageObj[tabId].total = total;
+        
+        // We have to clear all data of the previous date
+        chrome.storage.local.clear(function () {
+          console.debug('Storage was cleared.');
+          saveTime(storageObj);
+        });
       }
     } else {
-      total = time;
+      storageObj[tabId].total = total;
+      saveTime(storageObj);
     }
+  });
+}
 
-    storageObj[tabId] = {
-      total: total,
-      date: currentDate
-    };
-    console.debug('background.js:addTime()');
-    console.debug('object to save/update');
-    console.debug(storageObj);
+/**
+* Save time in storage.
+* @param {Object} storageObj Object to save.
+*/
+function saveTime(storageObj) {
+  console.debug('background.js:saveTime()');
+  console.debug('object to save/update');
+  console.debug(storageObj);
 
-    chrome.storage.local.set(storageObj, function () {
-      res({responseData: 'Saved!'});
-    });
+  chrome.storage.local.set(storageObj, function () {
+    res({responseData: 'Saved!'});
   });
 }
 

@@ -78,7 +78,7 @@ window.onblur = function () {
 
 window.onfocus = function () {
   if (intervalId) {
-    clearIntervel(intervalId);
+    clearInterval(intervalId);
   }
   intervalId = setInterval(countTime, 60000);
 };

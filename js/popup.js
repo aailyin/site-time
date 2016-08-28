@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   getCurrentTabUrl( function (tab) {
-    // TODO: save url and count time
     let urlName = document.getElementById('site-name');
     
+    // TODO: udate to display ALL sites with asted time
     chrome.tabs.sendMessage(tab.id, {action: 'GET_TIME'}, function(data) {
       if (!data || chrome.runtime.lastError) {
         console.error('Cannot get Time!');

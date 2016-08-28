@@ -65,17 +65,17 @@ function addTime(tabId, time, res) {
       if (savedSiteTimeObj.date === currentDate) {
         total = parseInt(savedSiteTimeObj.total, 10) + time;
       } else {
-        storageObj[tabId].total = total;
+        storageObj[tabId].total = time;
         
         // We have to clear all data of the previous date
         chrome.storage.local.clear(function () {
           console.debug('Storage was cleared.');
-          saveTime(storageObj);
+          saveTime(storageObj, res);
         });
       }
     } else {
-      storageObj[tabId].total = total;
-      saveTime(storageObj);
+      storageObj[tabId].total = time;
+      saveTime(storageObj, res);
     }
   });
 }
@@ -83,14 +83,15 @@ function addTime(tabId, time, res) {
 /**
 * Save time in storage.
 * @param {Object} storageObj Object to save.
+* @param {Function} callback
 */
-function saveTime(storageObj) {
+function saveTime(storageObj, callback) {
   console.debug('background.js:saveTime()');
   console.debug('object to save/update');
   console.debug(storageObj);
 
   chrome.storage.local.set(storageObj, function () {
-    res({responseData: 'Saved!'});
+    callback({responseData: 'Saved!'});
   });
 }
 
@@ -111,8 +112,13 @@ function getTime(tabId, res) {
   }
 
   chrome.storage.local.get(tabId, function (savedTime) {
-    savedTime[tabId].siteName = tabId;
-    res(savedTime[tabId]);
+    if (savedTime[tabId]) {
+      savedTime[tabId].siteName = tabId;
+      res(savedTime[tabId]);
+    } else {
+      res(null);
+    }
+    
   });
 }
 
@@ -128,3 +134,9 @@ function getDate() {
 
     return `${month}/${day}/${year}`;
 }
+
+chrome.runtime.onInstalled.addListener(function() {
+  chrome.storage.local.clear(function () {
+    console.debug('chrome storage was cleared on install.');
+  });
+});

@@ -63,7 +63,8 @@ function addTime(tabId, time, res) {
 
     if (savedSiteTimeObj && savedSiteTimeObj.total) {
       if (savedSiteTimeObj.date === currentDate) {
-        total = parseInt(savedSiteTimeObj.total, 10) + time;
+        storageObj[tabId].total  = parseInt(savedSiteTimeObj.total, 10) + time;
+        saveTime(storageObj, res);
       } else {
         storageObj[tabId].total = time;
         

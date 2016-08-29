@@ -1,6 +1,7 @@
 const currentTab = location.origin;
 const ADD_TIME = 'ADD_TIME';
 const GET_TIME = 'GET_TIME';
+const TIME = 60000;
 
 let intervalId = null;
 
@@ -58,7 +59,7 @@ function countTime() {
       action: ADD_TIME, 
       data: {
         tabId: currentTab,
-        time: 60000
+        time: TIME
       }
     }, function (data) {
       if (chrome.runtime.lastError) {
@@ -69,18 +70,23 @@ function countTime() {
     });
 }
 
+
+// TODO: it doesn't work! need to update.
 // Window events---------------------------------------
 // The current tab is inactive so we need to remove timeout.
 window.onblur = function () {
+  console.debug('Window is NOT active!');
+
   clearInterval(intervalId);
   intervalId = null;
 };
 
 window.onfocus = function () {
+  console.debug('Window is active!');
   if (intervalId) {
     clearInterval(intervalId);
   }
-  intervalId = setInterval(countTime, 60000);
+  intervalId = setInterval(countTime, TIME);
 };
 
-intervalId = setInterval(countTime, 60000);
+intervalId = setInterval(countTime, TIME);

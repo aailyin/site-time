@@ -70,23 +70,20 @@ function countTime() {
     });
 }
 
+chrome.tabs.onActivated.addListener(function (tabId, windowId) {
+  chrome.tabs.getCurrent(function (tabInfo){
+    console.debug('The active tab was changed! I\'m ' + currentTab);
 
-// TODO: it doesn't work! need to update.
-// Window events---------------------------------------
-// The current tab is inactive so we need to remove timeout.
-window.onblur = function () {
-  console.debug('Window is NOT active!');
+    if (tabInfo.id === tabId) {
+      console.debug('New tab is me! Set interval!');
+      intervalId = setInterval(countTime, TIME);
+    } else {
+      console.debug('New tab is not me! Clear interval!');
 
-  clearInterval(intervalId);
-  intervalId = null;
-};
-
-window.onfocus = function () {
-  console.debug('Window is active!');
-  if (intervalId) {
-    clearInterval(intervalId);
-  }
-  intervalId = setInterval(countTime, TIME);
-};
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+  });
+});
 
 intervalId = setInterval(countTime, TIME);

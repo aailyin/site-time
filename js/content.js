@@ -1,9 +1,12 @@
 const currentTab = location.origin;
 const ADD_TIME = 'ADD_TIME';
 const GET_TIME = 'GET_TIME';
-const TIME = 60000;
+const CHECK_TAB_INTERVAL = 'CHECK_TAB_INTERVAL';
+const SAVE_TAB_ID = 'SAVE_TAB_ID';
+const TIME = 10000;
 
 let intervalId = null;
+let currentTabId = null;
 
 chrome.runtime.onMessage.addListener(listener);
 
@@ -25,6 +28,11 @@ function listener(req, sender, res) {
     case GET_TIME:
       getTime(res);
       return true;
+    case CHECK_TAB_INTERVAL:
+      checkTabInterval(req, res);
+      return true;
+    case SAVE_TAB_ID:
+      saveTabId(req, res);
     default:
       return false;
   }
@@ -52,6 +60,48 @@ function getTime(res) {
 }
 
 /**
+* Check if interval should be cleared or created.
+*
+* @param {Object} req Request object.
+* @param {Function} res Callback function.
+*/
+function checkTabInterval(req, res) {
+  console.debug('content.js:checkTabInterval()');
+  console.debug('TabId is ' + req.newTabId);
+
+  let tabId = req.newTabId;
+  if (tabId === currentTabId) {
+    if (intervalId === null) {
+      intervalId = setInterval(countTime, TIME);
+    }
+    res({data: true, message: 'Interval was set!'});
+  } else {
+    clearInterval(intervalId);
+    intervalId = null;
+    res({data: true, message: 'Interval was stopped!'});
+  }
+}
+
+/**
+* Save tab id for new created tab.
+*
+* @param {Object} req Request object.
+* @param {Function} res Callback function.
+*/
+function saveTabId(req, res) {
+  console.debug('content.js:saveTabid()');
+  console.debug('TabId is ' + req.tabId);
+
+  if(req.tabId) {
+    currentTabId = req.tabId;
+    res({data: true});
+  } else {
+    res({data: false});
+  }
+
+}
+
+/**
 * Count time main function.
 */
 function countTime() {
@@ -69,21 +119,5 @@ function countTime() {
       }
     });
 }
-
-chrome.tabs.onActivated.addListener(function (tabId, windowId) {
-  chrome.tabs.getCurrent(function (tabInfo){
-    console.debug('The active tab was changed! I\'m ' + currentTab);
-
-    if (tabInfo.id === tabId) {
-      console.debug('New tab is me! Set interval!');
-      intervalId = setInterval(countTime, TIME);
-    } else {
-      console.debug('New tab is not me! Clear interval!');
-
-      clearInterval(intervalId);
-      intervalId = null;
-    }
-  });
-});
 
 intervalId = setInterval(countTime, TIME);

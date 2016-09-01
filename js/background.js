@@ -170,7 +170,7 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
       let tabId = tab.id;
       chrome.tabs.sendMessage(tabId, {
         action: CHECK_TAB_INTERVAL,
-        newTabId: tabId
+        newTabId: activeInfo.tabId
       }, function (resp) {
         console.debug('Interval was checked for : ' + tabId);
         if(resp) {

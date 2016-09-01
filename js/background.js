@@ -3,7 +3,51 @@ const GET_TIME = 'GET_TIME';
 const SAVE_TAB_ID = 'SAVE_TAB_ID';
 const CHECK_TAB_INTERVAL = 'CHECK_TAB_INTERVAL';
 
+//---------------------------------------------------------------
+// Listeners
+//---------------------------------------------------------------
 chrome.runtime.onMessage.addListener(listener);
+
+
+chrome.runtime.onInstalled.addListener(function() {
+  chrome.storage.local.clear(function () {
+    console.debug('chrome storage was cleared on install.');
+  });
+});
+
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+  console.debug('background.js:Tab was updated: ' + tab.url);
+
+  chrome.tabs.sendMessage(tab.id, {
+      action: SAVE_TAB_ID,
+      tabId: tab.id
+    }, function (resp) {
+      console.debug('background.js:Tab id was saved for: ' + tab.url);
+    });
+});
+
+chrome.tabs.onActivated.addListener(function (activeInfo) {
+  console.debug('background.js:Tab was activated: ' + activeInfo.tabId);
+  
+  chrome.tabs.query({}, function(tabs) {
+    tabs.forEach(function (tab) {
+      let tabId = tab.id;
+      chrome.tabs.sendMessage(tabId, {
+        action: CHECK_TAB_INTERVAL,
+        newTabId: activeInfo.tabId
+      }, function (resp) {
+        console.debug('Interval was checked for : ' + tabId);
+        if(resp) {
+          console.debug('Message is: ' + resp.message);
+        }
+      });
+    });
+  });
+});
+
+//--------------------------------------------------------------
+// Methods
+//--------------------------------------------------------------
 
 /**
 * Background listener for all tabs.
@@ -137,46 +181,3 @@ function getDate() {
 
     return `${month}/${day}/${year}`;
 }
-
-chrome.runtime.onInstalled.addListener(function() {
-  chrome.storage.local.clear(function () {
-    console.debug('chrome storage was cleared on install.');
-  });
-});
-
-chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  /*chrome.tabs.get(tab.id, function (tabInfo) {
-    chrome.tabs.sendMessage(tab.id, {
-      action: SAVE_TAB_ID,
-      tabId: tab.id
-    }, function (resp) {
-      console.debug('Tab id was saved for: ' + tab.id);
-    });
-  });*/
-  console.debug('background.js:Tab was updated: ' + tab.url);
-  chrome.tabs.sendMessage(tab.id, {
-      action: SAVE_TAB_ID,
-      tabId: tab.id
-    }, function (resp) {
-      console.debug('background.js:Tab id was saved for: ' + tab.url);
-    });
-});
-
-chrome.tabs.onActivated.addListener(function (activeInfo) {
-  console.debug('background.js:Tab was activated: ' + activeInfo.tabId);
-  
-  chrome.tabs.query({}, function(tabs) {
-    tabs.forEach(function (tab) {
-      let tabId = tab.id;
-      chrome.tabs.sendMessage(tabId, {
-        action: CHECK_TAB_INTERVAL,
-        newTabId: activeInfo.tabId
-      }, function (resp) {
-        console.debug('Interval was checked for : ' + tabId);
-        if(resp) {
-          console.debug('Message is: ' + resp.message);
-        }
-      });
-    });
-  });
-});

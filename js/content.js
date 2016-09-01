@@ -67,15 +67,19 @@ function getTime(res) {
 */
 function checkTabInterval(req, res) {
   console.debug('content.js:checkTabInterval()');
-  console.debug('TabId is ' + req.newTabId);
+  console.debug('newTabId is ' + req.newTabId + ', currentTabId is' + currentTabId);
 
   let tabId = req.newTabId;
   if (tabId === currentTabId) {
+    console.debug(`Interval was set for tab ${currentTabId}!`);
+
     if (intervalId === null) {
       intervalId = setInterval(countTime, TIME);
     }
     res({data: true, message: `Interval was set for tab ${currentTabId}!`});
   } else {
+    console.debug(`Interval was stopped for tab ${currentTabId}!`);
+
     clearInterval(intervalId);
     intervalId = null;
     res({data: true, message: `Interval was stopped for tab ${currentTabId}!`});

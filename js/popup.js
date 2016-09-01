@@ -50,7 +50,7 @@ function getWastedTime(msTime) {
   let ms = parseInt(msTime, 10);
   let mins = ms / (60*1000);
   let hours = ~~(mins/60);
-  let minutes = mins - hours*60;
+  let minutes = ~~(mins - hours*60);
 
   return hours + 'h ' + minutes + 'm';
 }

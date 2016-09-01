@@ -74,11 +74,11 @@ function checkTabInterval(req, res) {
     if (intervalId === null) {
       intervalId = setInterval(countTime, TIME);
     }
-    res({data: true, message: 'Interval was set!'});
+    res({data: true, message: `Interval was set for tab ${currentTabId}!`});
   } else {
     clearInterval(intervalId);
     intervalId = null;
-    res({data: true, message: 'Interval was stopped!'});
+    res({data: true, message: `Interval was stopped for tab ${currentTabId}!`});
   }
 }
 

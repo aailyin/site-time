@@ -2,11 +2,23 @@ const ADD_TIME = 'ADD_TIME';
 const GET_TIME = 'GET_TIME';
 const SAVE_TAB_ID = 'SAVE_TAB_ID';
 const CHECK_TAB_INTERVAL = 'CHECK_TAB_INTERVAL';
+const GET_STATISTICS = 'GET_STATISTICS';
 
 //---------------------------------------------------------------
 // Listeners
 //---------------------------------------------------------------
 chrome.runtime.onMessage.addListener(listener);
+
+chrome.extension.onMessage.addListener(function (req, sender, res) {
+  if (req.action === GET_STATISTICS) {
+    chrome.storage.local.get(null, function (data) {
+      console.debug('background.js:Get all statistics. Data is:');
+      console.debug(data);
+
+      res(data);
+    });
+  }
+});
 
 
 chrome.runtime.onInstalled.addListener(function() {

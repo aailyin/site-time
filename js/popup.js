@@ -1,6 +1,23 @@
+const GET_STATISTICS = 'GET_STATISTICS';
+
 document.addEventListener('DOMContentLoaded', () => {
-  getCurrentTabUrl( function (tab) {
+  let mainWrapper = document.getElementById('site-name-wrapper');
+
+  document.getElementById('show-all-statistics').addEventListener('click', function (event) {
+    event.preventDefault();
+
+    getAllStatistics(function (data) {
+      if (data) {
+        //TODO: display here all data
+
+        mainWrapper.className += 'has-info';
+      }
+    });
+  });
+
+  getCurrentTabUrl(function (tab) {
     let urlName = document.getElementById('site-name');
+    let timeBlock = document.getElementById('time-block');
     
     // TODO: udate to display ALL sites with asted time
     chrome.tabs.sendMessage(tab.id, {action: 'GET_TIME'}, function(data) {
@@ -16,6 +33,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+function getAllStatistics(callback) {
+  chrome.extension.sendMessage({action: GET_STATISTICS}, function (data) {
+    console.debug('popup.js:getAllStatistics() has been called.');
+    console.debug('Data is:');
+    console.debug(data);
+
+    callback(data);
+  });
+}
 
 /**
  * Get the current URL.

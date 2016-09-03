@@ -1,3 +1,22 @@
-p span {
+.site-name-wrapper {
+  text-align: center;
   font-weight: bold;
+  font-size: 12px;
+}
+
+.site-name-wrapper .error {
+  display: none;
+}
+
+.site-name-wrapper.has-error .site-time-info {
+  display: none;
+}
+
+.site-name-wrapper.has-error .error {
+  display: block;
+}
+
+.site-name-wrapper .time-block {
+  color: red;
+  font-size: 18px;
 }

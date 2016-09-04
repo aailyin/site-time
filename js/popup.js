@@ -9,10 +9,25 @@ document.addEventListener('DOMContentLoaded', () => {
     getAllStatistics(function (data) {
       if (data) {
         //TODO: display here all data
+        //HTML markup is
+        /*
+          <li>
+            <div class="info">
+              <p class="name">https://twitter.com/blackhard327/notes/note_123/justSimpleText</p>
+              <span class="time">- 3h 23m</span>
+            </div>
+          </li>
+        */
 
-        mainWrapper.className += 'has-info';
+        mainWrapper.className += ' has-info';
       }
     });
+  });
+
+  document.getElementById('hide-statistics').addEventListener('click', function (event) {
+    event.preventDefault();
+    let className = mainWrapper.className;
+    mainWrapper.className = className.replace('has-info', '');
   });
 
   getCurrentTabUrl(function (tab) {
@@ -24,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!data || chrome.runtime.lastError) {
         console.error('Cannot get Time!');
         // TODO: Display error in popup here
+        // add class has-error to root wrapper
         return;
       }
 

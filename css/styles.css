@@ -34,6 +34,8 @@
 
 .site-name-wrapper.has-error .error {
   display: block;
+  font-size: 18px;
+  font-weight: normal;
 }
 
 .site-name-wrapper.has-info .site-time-all-statistics {

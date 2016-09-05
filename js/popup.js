@@ -1,8 +1,10 @@
 const GET_STATISTICS = 'GET_STATISTICS';
 
+let mainWrapper;
+
 document.addEventListener('DOMContentLoaded', () => {
-  let mainWrapper = document.getElementById('site-name-wrapper');
   let allStatistics = document.getElementById('site-time-all-statistics');
+  mainWrapper = document.getElementById('site-name-wrapper');
 
   document.getElementById('show-all-statistics').addEventListener('click', (event) => {
     event.preventDefault();
@@ -21,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         allStatistics.innerHTML = html;
         mainWrapper.className += ' has-info';
+      } else {
+        showError();
       }
     });
   });
@@ -83,18 +87,31 @@ function getCurrentTabUrlRes(tab) {
   let urlName = document.getElementById('site-name');
   let timeBlock = document.getElementById('time-block');
   
-  // TODO: udate to display ALL sites with asted time
+  hideError();
   chrome.tabs.sendMessage(tab.id, {action: 'GET_TIME'}, (data) => {
     if (!data || chrome.runtime.lastError) {
       console.error('Cannot get Time!');
-      // TODO: Display error in popup here
-      // add class has-error to root wrapper
+      showError();
       return;
     }
 
     urlName.innerHTML = data.siteName;
     timeBlock.innerHTML = getWastedTime(data.total);
   });
+}
+
+/**
+* Show error block.
+*/
+function showError() {
+  mainWrapper.className += ' has-error';
+}
+
+/**
+* Hide error block.
+*/
+function hideError() {
+  mainWrapper.className = mainWrapper.className.replace('has-error', '');
 }
 
 /**

@@ -61,12 +61,18 @@
   color: red;
 }
 
+.site-time-all-statistics ul .time:before {
+  content: "-";
+  margin: 0 5px;
+}
+
 .site-time-all-statistics ul .name {
   max-width: 240px;
   overflow: hidden;
   text-overflow: ellipsis;
   float: left;
   margin: 0;
+  padding-left: 10px;
 }
 
 .site-time-all-statistics ul li {

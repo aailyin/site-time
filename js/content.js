@@ -50,7 +50,7 @@ function getTime(res) {
       data: {
         tabId: currentTab
       }
-    }, function (data) {
+    }, (data) => {
       if (chrome.runtime.lastError) {
         res(null);
       } else {
@@ -115,7 +115,7 @@ function countTime() {
         tabId: currentTab,
         time: TIME
       }
-    }, function (data) {
+    }, (data) => {
       if (chrome.runtime.lastError) {
         console.error('Counted time has not been saved for: ' + currentTab);
       } else {

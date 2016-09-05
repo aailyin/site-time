@@ -9,45 +9,33 @@ const GET_STATISTICS = 'GET_STATISTICS';
 //---------------------------------------------------------------
 chrome.runtime.onMessage.addListener(listener);
 
-chrome.extension.onMessage.addListener(function (req, sender, res) {
-  if (req.action === GET_STATISTICS) {
-    chrome.storage.local.get(null, function (data) {
-      console.debug('background.js:Get all statistics. Data is:');
-      console.debug(data);
-
-      res(data);
-    });
-  }
-});
-
-
 chrome.runtime.onInstalled.addListener(function() {
-  chrome.storage.local.clear(function () {
+  chrome.storage.local.clear(() => {
     console.debug('chrome storage was cleared on install.');
   });
 });
 
-chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   console.debug('background.js:Tab was updated: ' + tab.url);
 
   chrome.tabs.sendMessage(tab.id, {
       action: SAVE_TAB_ID,
       tabId: tab.id
-    }, function (resp) {
+    }, (resp) => {
       console.debug('background.js:Tab id was saved for: ' + tab.url);
     });
 });
 
-chrome.tabs.onActivated.addListener(function (activeInfo) {
+chrome.tabs.onActivated.addListener((activeInfo) => {
   console.debug('background.js:Tab was activated: ' + activeInfo.tabId);
   
-  chrome.tabs.query({}, function(tabs) {
-    tabs.forEach(function (tab) {
+  chrome.tabs.query({}, (tabs) => {
+    tabs.forEach((tab) => {
       let tabId = tab.id;
       chrome.tabs.sendMessage(tabId, {
         action: CHECK_TAB_INTERVAL,
         newTabId: activeInfo.tabId
-      }, function (resp) {
+      }, (resp) => {
         console.debug('Interval was checked for : ' + tabId);
         if(resp) {
           console.debug('Message is: ' + resp.message);
@@ -83,6 +71,9 @@ function listener(req, sender, res) {
     case GET_TIME: 
       getTime(data.tabId, res);
       return true;
+    case GET_STATISTICS:
+      getStatistics(res);
+      return true;
     default:
       return false;
   }
@@ -108,7 +99,7 @@ function addTime(tabId, time, res) {
     return;
   }
 
-  chrome.storage.local.get(tabId, function (savedTime) {
+  chrome.storage.local.get(tabId, (savedTime) => {
     let savedSiteTimeObj = savedTime[tabId];
 
     let total = 0;
@@ -127,7 +118,7 @@ function addTime(tabId, time, res) {
         storageObj[tabId].total = time;
         
         // We have to clear all data of the previous date
-        chrome.storage.local.clear(function () {
+        chrome.storage.local.clear(() => {
           console.debug('Storage was cleared.');
           saveTime(storageObj, res);
         });
@@ -149,7 +140,7 @@ function saveTime(storageObj, callback) {
   console.debug('object to save/update');
   console.debug(storageObj);
 
-  chrome.storage.local.set(storageObj, function () {
+  chrome.storage.local.set(storageObj, () => {
     callback({responseData: 'Saved!'});
   });
 }
@@ -170,7 +161,7 @@ function getTime(tabId, res) {
     return;
   }
 
-  chrome.storage.local.get(tabId, function (savedTime) {
+  chrome.storage.local.get(tabId, (savedTime) => {
     if (savedTime[tabId]) {
       savedTime[tabId].siteName = tabId;
       res(savedTime[tabId]);
@@ -178,6 +169,19 @@ function getTime(tabId, res) {
       res(null);
     }
     
+  });
+}
+
+/**
+* Get all today statistics.
+* @param {Function} res Callback function.
+*/
+function getStatistics(res) {
+  chrome.storage.local.get(null, (data) => {
+    console.debug('background.js:Get all statistics. Data is:');
+    console.debug(data);
+
+    res(data);
   });
 }
 

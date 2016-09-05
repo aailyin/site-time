@@ -2,8 +2,8 @@
   text-align: center;
   font-weight: bold;
   font-size: 14px;
-  min-width: 250px;
-  max-width: 320px;
+  min-width: 280px;
+  max-width: 350px;
   max-height: 210px;
   overflow: auto;
   padding: 10px 0;
@@ -54,7 +54,7 @@
 
 .site-time-all-statistics ul {
   list-style: none;
-  padding-left: 0;
+  padding-left: 10px;
   text-align: left;
 }
 
@@ -68,12 +68,11 @@
 }
 
 .site-time-all-statistics ul .name {
-  max-width: 240px;
+  max-width: 185px;
   overflow: hidden;
   text-overflow: ellipsis;
   float: left;
   margin: 0;
-  padding-left: 10px;
 }
 
 .site-time-all-statistics ul li {

@@ -1,4 +1,5 @@
 const GET_STATISTICS = 'GET_STATISTICS';
+const regex = /(http:\/\/(www\.)?)|(https:\/\/(www\.)?)/;
 
 let mainWrapper;
 
@@ -16,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         keys.map((key) => {
           html += '<li>' +
                     '<div class="info">' +
-                      '<p class="name">' + key + '</p>' +
+                      '<p class="name">' + key.replace(regex, '') + '</p>' +
                       '<span class="time">' + getWastedTime(data[key].total) + '</span>' +
                     '</div>' +
                   '</li>';
@@ -95,7 +96,7 @@ function getCurrentTabUrlRes(tab) {
       return;
     }
 
-    urlName.innerHTML = data.siteName;
+    urlName.innerHTML = data.siteName.replace(regex, '');
     timeBlock.innerHTML = getWastedTime(data.total);
   });
 }
